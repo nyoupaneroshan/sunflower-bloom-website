@@ -1,9 +1,38 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail } from 'lucide-react';
-import contactData from '../data/contact.json';
+import { loadJsonFile } from '../utils/dataWriter';
 
 const Contact = () => {
+  const [contactData, setContactData] = useState({
+    title: "Contact Information",
+    address: "Tarakeshwor- 06, KTM",
+    phone: "(977) 01-5136321",
+    email: "sfa2061@gmail.com",
+    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.123456789!2d85.123456!3d27.123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjfCsDA3JzI0LjQiTiA4NcKwMDcnMjQuNCJF!5e0!3m2!1sen!2snp!4v1234567890"
+  });
+
+  useEffect(() => {
+    loadContactData();
+    
+    // Listen for data updates from admin panel
+    const handleDataUpdate = (event) => {
+      if (event.detail.filename === 'contact.json') {
+        setContactData(event.detail.data);
+      }
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+    return () => window.removeEventListener('dataUpdated', handleDataUpdate);
+  }, []);
+
+  const loadContactData = async () => {
+    const data = await loadJsonFile('contact.json');
+    if (data) {
+      setContactData(data);
+    }
+  };
+
   return (
     <section id="contact" className="py-20 bg-gradient-to-b from-gray-900 via-gray-800 to-orange-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

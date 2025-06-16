@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Bell } from 'lucide-react';
-import notificationsData from '../data/notifications.json';
+import { loadJsonFile } from '../utils/dataWriter';
 
 const NotificationBanner = () => {
   const [notifications, setNotifications] = useState([]);
@@ -9,9 +9,28 @@ const NotificationBanner = () => {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    const activeNotifications = notificationsData.notifications.filter(n => n.isActive);
-    setNotifications(activeNotifications);
+    loadNotifications();
+    
+    // Listen for data updates from admin panel
+    const handleDataUpdate = (event) => {
+      if (event.detail.filename === 'notifications.json') {
+        const activeNotifications = event.detail.data.notifications?.filter(n => n.isActive) || [];
+        setNotifications(activeNotifications);
+        setCurrentIndex(0);
+      }
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+    return () => window.removeEventListener('dataUpdated', handleDataUpdate);
   }, []);
+
+  const loadNotifications = async () => {
+    const data = await loadJsonFile('notifications.json');
+    if (data && data.notifications) {
+      const activeNotifications = data.notifications.filter(n => n.isActive);
+      setNotifications(activeNotifications);
+    }
+  };
 
   useEffect(() => {
     if (notifications.length > 1) {
