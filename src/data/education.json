@@ -1,0 +1,40 @@
+
+{
+  "curriculum": {
+    "title": "Curriculum",
+    "description": "Balanced and diverse, emphasizing STEM, humanities, and life skills to prepare students for the real world."
+  },
+  "mentoring": {
+    "title": "Personalized Mentoring",
+    "description": "Our dedicated mentors guide each student on a journey of self-discovery, identifying strengths and tackling challenges head-on. With personalized attention, we help unlock every individual's full potential."
+  },
+  "classrooms": {
+    "title": "Interactive Classrooms",
+    "description": "Our interactive classrooms are buzzing with discussions, creative brainstorming, and hands-on activities. It's a dynamic environment where curiosity leads the way."
+  },
+  "counseling": {
+    "title": "Student Counseling",
+    "description": "The teachers conduct classes while understanding the students' classroom requirements. They hold frequent counseling sessions for students and inform the parents, highlighting the support needed from them as well."
+  },
+  "beyondBooks": {
+    "title": "Learning Beyond Books",
+    "description": "By fostering creativity, resilience, and confidence, we prepare students not just for exams but for life itself — ready to rise to any challenge with determination and heart."
+  },
+  "grades": {
+    "title": "Grades Offered",
+    "levels": [
+      {
+        "level": "Pre-Primary",
+        "grades": "Playgroup to UKg"
+      },
+      {
+        "level": "Basic",
+        "grades": "Grade 1 to Grade 8"
+      },
+      {
+        "level": "Secondary", 
+        "grades": "Grade 9 to Grade 10"
+      }
+    ]
+  }
+}

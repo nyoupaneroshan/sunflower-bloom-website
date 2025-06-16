@@ -1,0 +1,21 @@
+
+{
+  "notifications": [
+    {
+      "id": 1,
+      "title": "World Schools League Certificate Awarded",
+      "content": "Sunflower Academy has been officially recognized as an international school with the World Schools League certificate in 2081 B.S.",
+      "date": "2024-12-15",
+      "priority": "high",
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "title": "SEE Results 2081",
+      "content": "Congratulations to our 17th batch of SEE graduates! Excellent results achieved with 95% pass rate.",
+      "date": "2024-11-20",
+      "priority": "medium",
+      "isActive": true
+    }
+  ]
+}

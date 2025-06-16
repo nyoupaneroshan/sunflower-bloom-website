@@ -1,0 +1,35 @@
+
+{
+  "title": "World-Class Facilities",
+  "subtitle": "Creating the perfect environment for learning and growth",
+  "facilities": [
+    {
+      "id": 1,
+      "title": "Digital Classrooms",
+      "description": "The digital classroom is equipped with advanced technology to enhance learning through interactive lessons, multimedia content, and online resources, creating an engaging and modern educational experience for students.",
+      "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "icon": "computer"
+    },
+    {
+      "id": 2,
+      "title": "Science Labs",
+      "description": "Get your hands messy and your mind curious! From bubbling chemistry experiments to electrifying physics demos, our fully-equipped lab lets students bring science to life through hands-on learning and discovery.",
+      "image": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "icon": "school"
+    },
+    {
+      "id": 3,
+      "title": "Transportation",
+      "description": "The school offers convenient transportation services to ensure a comfortable and efficient commute for students, minimizing travel time.",
+      "image": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "icon": "users"
+    },
+    {
+      "id": 4,
+      "title": "Spacious Playground",
+      "description": "The campus includes a spacious playground with facilities for basketball, volleyball, skating, and futsal, offering students plenty of opportunities for sports and outdoor activities.",
+      "image": "https://images.unsplash.com/photo-1500673922987-e212871fec22?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "icon": "users"
+    }
+  ]
+}

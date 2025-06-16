@@ -1,0 +1,40 @@
+
+{
+  "vision": {
+    "title": "Our Vision",
+    "content": "To be a leading institution recognized for academic excellence, holistic development, and innovation, empowering students to thrive as compassionate leaders and changemakers in a dynamic global community."
+  },
+  "mission": {
+    "title": "Our Mission", 
+    "content": "To be a leading institution recognized for academic excellence, holistic development, and innovation, empowering students to thrive as compassionate leaders and changemakers in a dynamic global community."
+  },
+  "coreValues": {
+    "title": "Our Core Values",
+    "values": [
+      {
+        "name": "Excellence",
+        "description": "Striving for the highest standards in everything we do."
+      },
+      {
+        "name": "Integrity", 
+        "description": "Acting with honesty, ethics, and responsibility."
+      },
+      {
+        "name": "Innovation",
+        "description": "Embracing new ideas and approaches to learning."
+      },
+      {
+        "name": "Respect",
+        "description": "Respecting each others."
+      },
+      {
+        "name": "Responsibility",
+        "description": "Becoming a responsible citizen."
+      }
+    ]
+  },
+  "history": {
+    "title": "Our History",
+    "content": "Sunflower Academy was established in 2061 B.S. with classes from Nursery to Grade 5, founded through the dedication and vision of Chairman Mr. Uddhab Bogati and Founder Member Mr. Ram Bahadur Gautam. Their efforts laid the groundwork for a school committed to academic excellence and holistic development.\n\nThe academy proudly celebrated its first batch of School Leaving Certificate (SLC) graduates in 2065 B.S. Over the years, Sunflower Academy has continued to grow in both size and reputation. In 2081 B.S., we marked a major milestone with the graduation of our 17th batch of Secondary Education Examination (SEE) students.\n\nToday, more than 1,000 students are part of the Sunflower Academy family, learning in a nurturing and progressive environment. In recognition of our commitment to global standards, we were awarded the World Schools League certificate in 2081 B.S., officially recognizing Sunflower Academy as an international school."
+  }
+}

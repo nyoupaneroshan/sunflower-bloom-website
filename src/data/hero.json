@@ -1,0 +1,11 @@
+
+{
+  "title": "Sunflower Academy",
+  "subtitle": "Inspiring Excellence Building Future",
+  "description": "Sunflower Academy offers a well-rounded education that blends academic excellence with creativity, innovation, and real-world skills. With personalized mentoring, interactive classrooms, modern facilities and diverse extracurriculars, we nurture confident, responsible, and globally minded learners.",
+  "heroImage": "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+  "ctaButton": {
+    "text": "Explore Our Campus",
+    "link": "#about"
+  }
+}
