@@ -1,8 +1,35 @@
 
-import React from 'react';
-import activitiesData from '../data/activities.json';
+import React, { useState, useEffect } from 'react';
+import { loadJsonFile } from '../utils/dataWriter';
 
 const Activities = () => {
+  const [activitiesData, setActivitiesData] = useState({
+    title: "Beyond Classroom",
+    subtitle: "Take a virtual tour of our Activities",
+    activities: []
+  });
+
+  useEffect(() => {
+    loadActivitiesData();
+    
+    // Listen for data updates from admin panel
+    const handleDataUpdate = (event) => {
+      if (event.detail.filename === 'activities.json') {
+        setActivitiesData(event.detail.data);
+      }
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+    return () => window.removeEventListener('dataUpdated', handleDataUpdate);
+  }, []);
+
+  const loadActivitiesData = async () => {
+    const data = await loadJsonFile('activities.json');
+    if (data) {
+      setActivitiesData(data);
+    }
+  };
+
   return (
     <section id="activities" className="py-20 bg-gradient-to-b from-orange-50 to-yellow-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

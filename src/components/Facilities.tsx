@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Computer, School, Users } from 'lucide-react';
-import facilitiesData from '../data/facilities.json';
+import { loadJsonFile } from '../utils/dataWriter';
 
 const iconMap = {
   computer: Computer,
@@ -10,6 +10,33 @@ const iconMap = {
 };
 
 const Facilities = () => {
+  const [facilitiesData, setFacilitiesData] = useState({
+    title: "World-Class Facilities",
+    subtitle: "Creating the perfect environment for learning and growth",
+    facilities: []
+  });
+
+  useEffect(() => {
+    loadFacilitiesData();
+    
+    // Listen for data updates from admin panel
+    const handleDataUpdate = (event) => {
+      if (event.detail.filename === 'facilities.json') {
+        setFacilitiesData(event.detail.data);
+      }
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+    return () => window.removeEventListener('dataUpdated', handleDataUpdate);
+  }, []);
+
+  const loadFacilitiesData = async () => {
+    const data = await loadJsonFile('facilities.json');
+    if (data) {
+      setFacilitiesData(data);
+    }
+  };
+
   return (
     <section id="facilities" className="py-20 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
