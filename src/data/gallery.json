@@ -1,0 +1,61 @@
+
+{
+  "images": [
+    {
+      "id": 1,
+      "title": "Science Lab Experiment",
+      "description": "Students conducting chemistry experiments",
+      "url": "https://images.unsplash.com/photo-1582719471384-894fbb16e074?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "category": "academics"
+    },
+    {
+      "id": 2,
+      "title": "Digital Classroom",
+      "description": "Interactive learning with modern technology",
+      "url": "https://images.unsplash.com/photo-1497486751825-1233686d5d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "category": "academics"
+    },
+    {
+      "id": 3,
+      "title": "Basketball Tournament",
+      "description": "Annual inter-house basketball championship",
+      "url": "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "category": "sports"
+    },
+    {
+      "id": 4,
+      "title": "Cultural Dance Performance",
+      "description": "Traditional dance during cultural fest",
+      "url": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "category": "cultural"
+    },
+    {
+      "id": 5,
+      "title": "Art Exhibition",
+      "description": "Student artwork display",
+      "url": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "category": "cultural"
+    },
+    {
+      "id": 6,
+      "title": "Swimming Practice",
+      "description": "Students in swimming training session",
+      "url": "https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "category": "sports"
+    },
+    {
+      "id": 7,
+      "title": "Library Study Session",
+      "description": "Quiet study time in our well-equipped library",
+      "url": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "category": "academics"
+    },
+    {
+      "id": 8,
+      "title": "Field Trip Adventure",
+      "description": "Educational trip to historical sites",
+      "url": "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "category": "events"
+    }
+  ]
+}
