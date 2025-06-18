@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
-import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { Eye, EyeOff, LogIn, Home } from 'lucide-react'; // Added Home icon
 import { useAuth } from '../contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom'; // Imported Link
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -30,8 +29,9 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <span className="text-white text-2xl">🌻</span>
+          {/* MODIFIED: Replaced emoji with logo */}
+          <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mx-auto mb-4 flex items-center justify-center p-2">
+             <img src="/main-logo.png" alt="Sunflower Academy Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-2xl font-bold text-gray-800">Admin Login</h1>
           <p className="text-gray-600 mt-2">Sign in to manage content</p>
@@ -85,9 +85,20 @@ const Login = () => {
             <span>Sign In</span>
           </button>
         </form>
+        
+        {/* --- NEW: Button to redirect to homepage --- */}
+        <div className="text-center mt-6">
+          <Link
+            to="/"
+            className="inline-flex items-center space-x-2 text-sm text-gray-500 hover:text-orange-500 transition-colors duration-200"
+          >
+            <Home className="w-4 h-4" />
+            <span>Back to Homepage</span>
+          </Link>
+        </div>
 
-        <div className="mt-6 text-center text-sm text-gray-500">
-          Demo credentials: admin / admin123
+        <div className="mt-4 text-center text-sm text-gray-500">
+          {/* Demo credentials: admin / admin123 */}
         </div>
       </div>
     </div>
