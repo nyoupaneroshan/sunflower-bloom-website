@@ -1,25 +1,42 @@
-
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Loader2 } from 'lucide-react'; // Added Loader2 icon
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import galleryData from '../data/gallery.json';
 
 const Gallery = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Fetch data from the API endpoint
   useEffect(() => {
-    setImages(galleryData.images);
+    const fetchImages = async () => {
+      try {
+        const response = await fetch('/api/gallery');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setImages(data.images);
+      } catch (err) {
+        setError(err.message);
+        console.error("Failed to fetch gallery:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchImages();
   }, []);
 
-  const categories = ['all', ...new Set(images.map((img: any) => img.category))];
+  const categories = ['all', ...Array.from(new Set(images.map((img) => img.category)))];
   const filteredImages = selectedCategory === 'all' 
     ? images 
-    : images.filter((img: any) => img.category === selectedCategory);
+    : images.filter((img) => img.category === selectedCategory);
 
-  const openLightbox = (image: any) => {
+  const openLightbox = (image) => {
     setSelectedImage(image);
   };
 
@@ -27,8 +44,8 @@ const Gallery = () => {
     setSelectedImage(null);
   };
 
-  const navigateImage = (direction: 'prev' | 'next') => {
-    const currentIndex = filteredImages.findIndex((img: any) => img.id === selectedImage.id);
+  const navigateImage = (direction) => {
+    const currentIndex = filteredImages.findIndex((img) => img.id === selectedImage.id);
     let newIndex;
     
     if (direction === 'prev') {
@@ -44,7 +61,6 @@ const Gallery = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      {/* Hero Section */}
       <section className="pt-24 pb-16 bg-gradient-to-r from-yellow-400 to-orange-500">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h1 className="text-5xl font-bold text-white mb-6 animate-fade-in">
@@ -56,7 +72,6 @@ const Gallery = () => {
         </div>
       </section>
 
-      {/* Category Filter */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-wrap justify-center gap-4 mb-12">
@@ -64,78 +79,79 @@ const Gallery = () => {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-200 capitalize ${
                   selectedCategory === category
                     ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:bg-gray-100 shadow-md'
                 }`}
               >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
+                {category}
               </button>
             ))}
           </div>
 
-          {/* Image Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredImages.map((image: any) => (
-              <div
-                key={image.id}
-                className="group cursor-pointer overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                onClick={() => openLightbox(image)}
-              >
-                <div className="relative aspect-square">
-                  <img
-                    src={image.url}
-                    alt={image.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-end">
-                    <div className="p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <h3 className="font-semibold">{image.title}</h3>
-                      <p className="text-sm">{image.description}</p>
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="w-12 h-12 text-orange-500 animate-spin" />
+              <p className="ml-4 text-lg text-gray-600">Loading Gallery...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <p className="text-lg text-red-500">Error: {error}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredImages.map((image) => (
+                <div
+                  key={image.id}
+                  className="group cursor-pointer overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  onClick={() => openLightbox(image)}
+                >
+                  <div className="relative aspect-square">
+                    <img
+                      src={image.url}
+                      alt={image.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-end">
+                      <div className="p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <h3 className="font-semibold">{image.title}</h3>
+                        <p className="text-sm">{image.description}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Lightbox */}
       {selectedImage && (
-        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-          <div className="relative max-w-4xl max-h-full">
-            <button
-              onClick={closeLightbox}
-              className="absolute top-4 right-4 text-white hover:bg-white/20 p-2 rounded-full z-10"
-            >
-              <X className="w-6 h-6" />
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="relative max-w-4xl w-full max-h-[90vh]">
+            <button onClick={closeLightbox} className="absolute -top-10 right-0 text-white hover:text-yellow-400 p-2 z-10">
+              <X className="w-8 h-8" />
             </button>
             
-            <button
-              onClick={() => navigateImage('prev')}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 p-2 rounded-full"
-            >
-              <ChevronLeft className="w-6 h-6" />
+            <button onClick={() => navigateImage('prev')} className="absolute left-0 sm:-left-12 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 p-3 rounded-full">
+              <ChevronLeft className="w-8 h-8" />
             </button>
             
-            <button
-              onClick={() => navigateImage('next')}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 p-2 rounded-full"
-            >
-              <ChevronRight className="w-6 h-6" />
+            <button onClick={() => navigateImage('next')} className="absolute right-0 sm:-right-12 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 p-3 rounded-full">
+              <ChevronRight className="w-8 h-8" />
             </button>
             
-            <img
-              src={selectedImage.url}
-              alt={selectedImage.title}
-              className="max-w-full max-h-full object-contain"
-            />
-            
-            <div className="absolute bottom-4 left-4 right-4 text-white text-center">
-              <h3 className="text-xl font-semibold mb-2">{selectedImage.title}</h3>
-              <p className="text-gray-300">{selectedImage.description}</p>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+                <img
+                    src={selectedImage.url}
+                    alt={selectedImage.title}
+                    className="max-w-full max-h-[70vh] object-contain"
+                />
+                <div className="mt-4 text-white text-center p-4 bg-black/50 rounded-lg">
+                    <h3 className="text-xl font-semibold mb-1">{selectedImage.title}</h3>
+                    <p className="text-gray-300 text-sm">{selectedImage.description}</p>
+                </div>
             </div>
           </div>
         </div>
