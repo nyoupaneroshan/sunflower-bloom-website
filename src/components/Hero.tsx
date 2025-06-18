@@ -1,14 +1,22 @@
-
 import React, { useState, useEffect } from 'react';
 import heroData from '../data/hero.json';
 
+// Define the default image to be used as a fallback
+const defaultImage = {
+  url: "https://raw.githubusercontent.com/nyoupaneroshan/SunflowerAcademy/refs/heads/main/public/school-line.jpg"
+};
+
 const Hero = () => {
   const [currentText, setCurrentText] = useState('');
-  const [isTyping, setIsTyping] = useState(true);
-  
-  const texts = ['Excellence', 'Innovation', 'Future Leaders', 'Success'];
   const [textIndex, setTextIndex] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  const texts = ['Excellence', 'Innovation', 'Future Leaders', 'Success'];
+
+  // Check if heroData has images, otherwise use the default.
+  const images = (heroData.images && heroData.images.length > 0) ? heroData.images : [defaultImage];
+
+  // Typing effect for text
   useEffect(() => {
     const text = texts[textIndex];
     let currentIndex = 0;
@@ -28,10 +36,37 @@ const Hero = () => {
     typeText();
   }, [textIndex]);
 
+  // Image slider effect
+  useEffect(() => {
+    if (images.length > 1) {
+      const timer = setTimeout(() => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+      }, 5000); 
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentImageIndex, images.length]);
+
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-orange-600 via-yellow-500 to-amber-400"></div>
-      <div className="absolute inset-0 bg-black/30"></div>
+      
+      {/* Background Image Slider */}
+      <div className="absolute inset-0">
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000 ease-in-out"
+            style={{
+              backgroundImage: `url(${image.url})`,
+              opacity: index === currentImageIndex ? 1 : 0,
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* --- MODIFIED: Dark overlay for text readability --- */}
+      {/* Changed from bg-black/50 to bg-black/70 for a darker background */}
+      <div className="absolute inset-0 bg-black/70"></div>
       
       {/* Animated background elements */}
       <div className="absolute inset-0">

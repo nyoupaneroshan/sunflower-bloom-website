@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, Phone, Mail, Heart } from 'lucide-react';
 
@@ -10,9 +9,17 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xl">🌻</span>
-              </div>
+              {/* MODIFIED SECTION: 
+                - Replaced the colored div with an <img> tag.
+                - The src attribute points to `/main-logo.png`, which correctly
+                  references the image from the public folder.
+                - Added an alt attribute for accessibility.
+              */}
+              <img 
+                src="/main-logo.png" 
+                alt="Sunflower Academy Logo" 
+                className="w-12 h-12" 
+              />
               <div>
                 <h3 className="text-2xl font-bold">Sunflower Academy</h3>
                 <p className="text-gray-400">Inspiring Excellence Building Future</p>
@@ -68,8 +75,9 @@ const Footer = () => {
               <span className="text-gray-400">for education</span>
             </div>
             <div className="text-gray-400 text-sm">
-              © 2024 Sunflower Academy. All rights reserved.
-            </div>
+            © {new Date().getFullYear()} Sunflower Academy. All rights reserved.
+          </div>
+
           </div>
         </div>
       </div>

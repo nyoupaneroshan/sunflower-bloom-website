@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Menu, X, GraduationCap } from 'lucide-react';
+import { Menu, X } from 'lucide-react'; // GraduationCap is no longer needed
 import { Link } from 'react-router-dom';
 
 const Navbar = () => {
@@ -19,9 +18,11 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-              <GraduationCap className="w-6 h-6 text-white" />
-            </div>
+            <img 
+              src="/main-logo.png" 
+              alt="Sunflower Academy Logo" 
+              className="w-10 h-10" 
+            />
             <div>
               <span className="text-xl font-bold text-gray-800">Sunflower Academy</span>
             </div>
@@ -38,12 +39,12 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
-            <Link
+            {/* <Link
               to="/login"
               className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-lg font-medium hover:from-yellow-500 hover:to-orange-600 transition-all duration-200"
             >
               Admin Login
-            </Link>
+            </Link> */}
           </div>
 
           {/* Mobile menu button */}
@@ -71,13 +72,13 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
-              <Link
+              {/* <Link
                 to="/login"
                 className="block px-3 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-lg font-medium text-center mt-4"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Admin Login
-              </Link>
+              </Link> */}
             </div>
           </div>
         )}

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { loadJsonFile } from '../utils/dataWriter';
@@ -9,8 +8,9 @@ const Contact = () => {
     address: "Tarakeshwor- 06, KTM",
     phone: "(977) 01-5136321",
     email: "sfa2061@gmail.com",
-    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.123456789!2d85.123456!3d27.123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjfCsDA3JzI0LjQiTiA4NcKwMDcnMjQuNCJF!5e0!3m2!1sen!2snp!4v1234567890"
+    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4032.0402149898878!2d85.2998052!3d27.750960300000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb18cce4ffffe7%3A0x161276d0d897c665!2sSunflower%20Academy%20(English%20Medium%20SS)!5e1!3m2!1sen!2snp!4v1750232702113!5m2!1sen!2snp"
   });
+  
 
   useEffect(() => {
     loadContactData();
@@ -87,9 +87,9 @@ const Contact = () => {
             </div>
 
             <div className="pt-8">
-              <button className="w-full lg:w-auto bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-yellow-500 hover:to-orange-600 transform hover:scale-105 transition-all duration-300 shadow-lg">
+              {/* <button className="w-full lg:w-auto bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-yellow-500 hover:to-orange-600 transform hover:scale-105 transition-all duration-300 shadow-lg">
                 Schedule a Visit
-              </button>
+              </button> */}
             </div>
           </div>
 
@@ -155,9 +155,35 @@ const Contact = () => {
             </form>
           </div>
         </div>
+
+        {/* Google Map */}
+        <div className="mt-16 bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 overflow-hidden">
+          <h3 className="text-2xl font-bold text-white mb-6 text-center">
+            Find Us on the Map
+          </h3>
+          <div className="aspect-w-16 aspect-h-9 w-full rounded-xl overflow-hidden shadow-lg">
+            {contactData.mapUrl && (
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4032.0402149898878!2d85.2998052!3d27.750960300000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb18cce4ffffe7%3A0x161276d0d897c665!2sSunflower%20Academy%20(English%20Medium%20SS)!5e1!3m2!1sen!2snp!4v1750232702113!5m2!1sen!2snp"
+                width="100%"
+                height="450"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="rounded-xl"
+              ></iframe>
+            )}
+          </div>
+        </div>
       </div>
     </section>
   );
 };
 
 export default Contact;
+
+
+
+
+

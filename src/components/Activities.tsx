@@ -24,7 +24,7 @@ const Activities = () => {
   }, []);
 
   const loadActivitiesData = async () => {
-    const data = await loadJsonFile('activities.json');
+    const data = await loadJsonFile('activities.json'); 
     if (data) {
       setActivitiesData(data);
     }
@@ -75,9 +75,9 @@ const Activities = () => {
         </div>
 
         <div className="text-center mt-12">
-          <button className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-4 rounded-full font-semibold text-lg hover:from-orange-600 hover:to-yellow-600 transform hover:scale-105 transition-all duration-300 shadow-lg">
+          {/* <button className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-4 rounded-full font-semibold text-lg hover:from-orange-600 hover:to-yellow-600 transform hover:scale-105 transition-all duration-300 shadow-lg">
             View All Activities
-          </button>
+          </button> */}
         </div>
       </div>
     </section>
