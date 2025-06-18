@@ -1,5 +1,5 @@
 
-// Data writer utility for updating JSON files
+// Data writer utility for updating data via API calls to MySQL database
 export const updateJsonFile = async (filename, data) => {
   try {
     console.log(`Updating ${filename} with:`, data);
@@ -11,11 +11,35 @@ export const updateJsonFile = async (filename, data) => {
       return false;
     }
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Map filename to API endpoint
+    const endpointMap = {
+      'facilities.json': '/api/facilities',
+      'gallery.json': '/api/gallery',
+      'notifications.json': '/api/notifications',
+      'hero.json': '/api/hero',
+      'activities.json': '/api/activities',
+      'contact.json': '/api/contact',
+      'about.json': '/api/about'
+    };
     
-    // Store in localStorage to persist data across sessions
-    localStorage.setItem(`sunflower_${filename}`, JSON.stringify(data));
+    const endpoint = endpointMap[filename];
+    if (!endpoint) {
+      console.error(`No API endpoint found for ${filename}`);
+      return false;
+    }
+    
+    // Send PUT request to update data
+    const response = await fetch(endpoint, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     
     // Dispatch custom event to notify components of data changes
     window.dispatchEvent(new CustomEvent('dataUpdated', { 
@@ -31,50 +55,44 @@ export const updateJsonFile = async (filename, data) => {
 
 export const loadJsonFile = async (filename) => {
   try {
-    // First try to load from localStorage (for admin updates)
-    const stored = localStorage.getItem(`sunflower_${filename}`);
-    if (stored) {
-      console.log(`Loading ${filename} from localStorage`);
-      return JSON.parse(stored);
+    console.log(`Loading ${filename} from API`);
+    
+    // Map filename to API endpoint
+    const endpointMap = {
+      'facilities.json': '/api/facilities',
+      'gallery.json': '/api/gallery',
+      'notifications.json': '/api/notifications',
+      'hero.json': '/api/hero',
+      'activities.json': '/api/activities',
+      'contact.json': '/api/contact',
+      'about.json': '/api/about'
+    };
+    
+    const endpoint = endpointMap[filename];
+    if (!endpoint) {
+      console.error(`No API endpoint found for ${filename}`);
+      return null;
     }
     
-    // Fallback to loading the initial data from the imported JSON files
-    console.log(`Loading initial ${filename} data`);
-    let initialData = null;
-    
-    switch (filename) {
-      case 'hero.json':
-        initialData = await import('../data/hero.json');
-        break;
-      case 'facilities.json':
-        initialData = await import('../data/facilities.json');
-        break;
-      case 'activities.json':
-        initialData = await import('../data/activities.json');
-        break;
-      case 'contact.json':
-        initialData = await import('../data/contact.json');
-        break;
-      case 'notifications.json':
-        initialData = await import('../data/notifications.json');
-        break;
-      case 'gallery.json':
-        initialData = await import('../data/gallery.json');
-        break;
-      case 'about.json':
-        initialData = await import('../data/about.json');
-        break;
-      default:
-        console.warn(`Unknown file: ${filename}`);
-        return null;
+    const response = await fetch(endpoint);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    // Extract the default export and store it in localStorage for future use
-    const data = initialData.default || initialData;
-    localStorage.setItem(`sunflower_${filename}`, JSON.stringify(data));
+    const data = await response.json();
+    console.log(`Loaded ${filename} data:`, data);
+    
     return data;
   } catch (error) {
     console.error(`Error loading ${filename}:`, error);
+    
+    // Fallback to localStorage if API fails
+    const stored = localStorage.getItem(`sunflower_${filename}`);
+    if (stored) {
+      console.log(`Fallback: Loading ${filename} from localStorage`);
+      return JSON.parse(stored);
+    }
+    
     return null;
   }
 };
