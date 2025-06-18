@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import NotificationManager from '../components/admin/NotificationManager';
 import GalleryManager from '../components/admin/GalleryManager';
 import ContentManager from '../components/admin/ContentManager';
+import DatabaseStatus from '../components/admin/DatabaseStatus';
 
 const Admin = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -81,6 +82,11 @@ const Admin = () => {
       {/* Main Content */}
       <div className="flex-1 p-8">
         <div className="max-w-6xl mx-auto">
+          {/* Database Status at the top */}
+          <div className="mb-6">
+            <DatabaseStatus />
+          </div>
+
           {activeTab === 'notifications' && <NotificationManager />}
           {activeTab === 'gallery' && <GalleryManager />}
           {(activeTab === 'hero' || activeTab === 'about' || activeTab === 'facilities' || activeTab === 'activities' || activeTab === 'contact') && (

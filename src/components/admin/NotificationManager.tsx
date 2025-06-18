@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Save, X, Bell, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -13,6 +12,7 @@ const NotificationManager = () => {
     isActive: true
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const typeOptions = [
@@ -29,9 +29,21 @@ const NotificationManager = () => {
   const loadNotifications = async () => {
     try {
       console.log('Loading notifications from API');
+      setConnectionError(null);
+      
       const response = await fetch('/api/notifications');
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+      }
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Expected JSON but got:', text.substring(0, 200));
+        throw new Error(`Server returned HTML instead of JSON. Check API endpoint configuration.`);
       }
       
       const data = await response.json();
@@ -39,12 +51,17 @@ const NotificationManager = () => {
       
       if (data && data.notifications) {
         setNotifications(data.notifications);
+      } else if (Array.isArray(data)) {
+        setNotifications(data);
+      } else {
+        setNotifications([]);
       }
     } catch (error) {
       console.error('Error loading notifications:', error);
+      setConnectionError(error.message);
       toast({
-        title: "Error",
-        description: "Failed to load notifications from database",
+        title: "Database Connection Error",
+        description: `Failed to load notifications: ${error.message}`,
         variant: "destructive"
       });
     }
@@ -54,6 +71,7 @@ const NotificationManager = () => {
     setIsSaving(true);
     try {
       console.log('Saving notifications to API:', updatedNotifications);
+      setConnectionError(null);
       
       const response = await fetch('/api/notifications', {
         method: 'PUT',
@@ -64,7 +82,9 @@ const NotificationManager = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Save error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
@@ -75,13 +95,14 @@ const NotificationManager = () => {
           description: "Notification updated successfully. It will appear on the website banner.",
         });
       } else {
-        throw new Error('Failed to save');
+        throw new Error(result.error || 'Failed to save');
       }
     } catch (error) {
       console.error('Save error:', error);
+      setConnectionError(error.message);
       toast({
         title: "Error",
-        description: "Failed to save notification. Please try again.",
+        description: `Failed to save notification: ${error.message}`,
         variant: "destructive"
       });
     }
@@ -171,6 +192,25 @@ const NotificationManager = () => {
           <span>Add New Notification</span>
         </button>
       </div>
+
+      {/* Connection Error Alert */}
+      {connectionError && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-start space-x-3">
+            <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-red-800 mb-1">Database Connection Issue</h3>
+              <p className="text-sm text-red-700 mb-2">{connectionError}</p>
+              <button
+                onClick={loadNotifications}
+                className="text-sm bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 transition-colors"
+              >
+                Retry Connection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add/Edit Form */}
       {(showAddForm || editingId) && (
