@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Save, X, RefreshCw, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { updateJsonFile, loadJsonFile, validateAdminAccess, sanitizeData } from '../../utils/dataWriter';
 
 interface ContentManagerProps {
   contentType: string;
@@ -19,7 +18,8 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
     hero: 'Homepage Banner',
     facilities: 'School Facilities',
     activities: 'Student Activities',
-    contact: 'Contact Information'
+    contact: 'Contact Information',
+    about: 'About Us Page'
   };
 
   const fieldLabels = {
@@ -37,39 +37,34 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
     icon: 'Icon Type',
     mapUrl: 'Google Maps URL',
     activities: 'Activities List',
-    facilities: 'Facilities List'
+    facilities: 'Facilities List',
+    principalMessage: 'Principal Message',
+    principalName: 'Principal Name',
+    principalImage: 'Principal Image',
+    schoolHistory: 'School History',
+    mission: 'Mission Statement',
+    vision: 'Vision Statement'
   };
 
   useEffect(() => {
-    // Check admin access before loading
-    if (!validateAdminAccess()) {
-      toast({
-        title: "Access Denied",
-        description: "You must be logged in as an admin to access this section.",
-        variant: "destructive"
-      });
-      return;
-    }
     loadContent();
   }, [contentType]);
 
   const loadContent = async () => {
     setIsLoading(true);
     try {
-      console.log(`Loading content for ${contentType}`);
-      const data = await loadJsonFile(`${contentType}.json`);
-      if (data) {
-        console.log(`Loaded data:`, data);
-        setContent(data);
-        setOriginalContent(data);
-      } else {
-        console.warn(`No data found for ${contentType}`);
-        toast({
-          title: "Warning",
-          description: `No data found for ${contentLabels[contentType] || contentType}`,
-          variant: "destructive"
-        });
+      console.log(`Loading content for ${contentType} from API`);
+      
+      const response = await fetch(`/api/${contentType}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
+      const data = await response.json();
+      console.log(`Loaded data from API:`, data);
+      
+      setContent(data);
+      setOriginalContent(data);
     } catch (error) {
       console.error(`Error loading ${contentType} content:`, error);
       toast({
@@ -82,25 +77,25 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
   };
 
   const handleSave = async () => {
-    // Validate admin access before saving
-    if (!validateAdminAccess()) {
-      toast({
-        title: "Access Denied",
-        description: "You must be logged in as an admin to save changes.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsSaving(true);
     try {
-      // Sanitize data before saving
-      const sanitizedContent = sanitizeData(content);
-      console.log(`Saving sanitized content:`, sanitizedContent);
+      console.log(`Saving content to API:`, content);
       
-      const success = await updateJsonFile(`${contentType}.json`, sanitizedContent);
-      if (success) {
-        setOriginalContent(sanitizedContent);
+      const response = await fetch(`/api/${contentType}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(content)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        setOriginalContent(content);
         toast({
           title: "✅ Success!",
           description: `${contentLabels[contentType] || contentType} has been updated successfully. Changes are now live on your website!`,
@@ -263,7 +258,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
             Edit {contentLabels[contentType] || contentType}
           </h1>
           <p className="text-gray-600 mt-1">
-            Make changes to your website content. All changes are automatically saved and will appear on your website immediately.
+            Make changes to your website content. All changes are saved to the database and will appear on your website immediately.
           </p>
         </div>
         <div className="flex space-x-2">
@@ -305,7 +300,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
           <li>• For images, paste the complete web address (URL starting with https://)</li>
           <li>• Use "Reset Changes" to undo all unsaved modifications</li>
           <li>• Long text fields support multiple paragraphs and detailed descriptions</li>
-          <li>• 🔒 All changes are secure and protected by admin authentication</li>
+          <li>• 🔒 All changes are saved securely to the database</li>
         </ul>
       </div>
     </div>

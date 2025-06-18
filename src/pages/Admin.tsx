@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { LogOut, Users, Bell, Image, BookOpen, Mail, Settings } from 'lucide-react';
+import { LogOut, Users, Bell, Image, BookOpen, Mail, Settings, Info } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import NotificationManager from '../components/admin/NotificationManager';
 import GalleryManager from '../components/admin/GalleryManager';
@@ -19,6 +19,7 @@ const Admin = () => {
     { id: 'notifications', name: 'Notifications', icon: Bell },
     { id: 'gallery', name: 'Gallery', icon: Image },
     { id: 'hero', name: 'Hero Section', icon: BookOpen },
+    { id: 'about', name: 'About Us', icon: Info },
     { id: 'facilities', name: 'Facilities', icon: Settings },
     { id: 'activities', name: 'Activities', icon: Users },
     { id: 'contact', name: 'Contact', icon: Mail }
@@ -82,7 +83,7 @@ const Admin = () => {
         <div className="max-w-6xl mx-auto">
           {activeTab === 'notifications' && <NotificationManager />}
           {activeTab === 'gallery' && <GalleryManager />}
-          {(activeTab === 'hero' || activeTab === 'facilities' || activeTab === 'activities' || activeTab === 'contact') && (
+          {(activeTab === 'hero' || activeTab === 'about' || activeTab === 'facilities' || activeTab === 'activities' || activeTab === 'contact') && (
             <ContentManager contentType={activeTab} />
           )}
         </div>

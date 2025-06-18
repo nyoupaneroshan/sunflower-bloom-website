@@ -2,25 +2,24 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Save, X, Bell, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { updateJsonFile, loadJsonFile } from '../../utils/dataWriter';
 
 const NotificationManager = () => {
   const [notifications, setNotifications] = useState([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    priority: 'medium',
+    message: '',
+    type: 'info',
     isActive: true
   });
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
-  const priorityOptions = [
-    { value: 'low', label: 'Low Priority', color: 'bg-blue-100 text-blue-600', description: 'General information' },
-    { value: 'medium', label: 'Medium Priority', color: 'bg-yellow-100 text-yellow-600', description: 'Important updates' },
-    { value: 'high', label: 'High Priority', color: 'bg-red-100 text-red-600', description: 'Urgent announcements' }
+  const typeOptions = [
+    { value: 'info', label: 'Information', color: 'bg-blue-100 text-blue-600', description: 'General information' },
+    { value: 'warning', label: 'Warning', color: 'bg-yellow-100 text-yellow-600', description: 'Important updates' },
+    { value: 'success', label: 'Success', color: 'bg-green-100 text-green-600', description: 'Good news' },
+    { value: 'error', label: 'Alert', color: 'bg-red-100 text-red-600', description: 'Urgent announcements' }
   ];
 
   useEffect(() => {
@@ -29,20 +28,47 @@ const NotificationManager = () => {
 
   const loadNotifications = async () => {
     try {
-      const data = await loadJsonFile('notifications.json');
+      console.log('Loading notifications from API');
+      const response = await fetch('/api/notifications');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Loaded notifications:', data);
+      
       if (data && data.notifications) {
         setNotifications(data.notifications);
       }
     } catch (error) {
       console.error('Error loading notifications:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load notifications from database",
+        variant: "destructive"
+      });
     }
   };
 
   const saveNotifications = async (updatedNotifications: any[]) => {
     setIsSaving(true);
     try {
-      const success = await updateJsonFile('notifications.json', { notifications: updatedNotifications });
-      if (success) {
+      console.log('Saving notifications to API:', updatedNotifications);
+      
+      const response = await fetch('/api/notifications', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notifications: updatedNotifications })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result.success) {
         setNotifications(updatedNotifications);
         toast({
           title: "Success!",
@@ -52,6 +78,7 @@ const NotificationManager = () => {
         throw new Error('Failed to save');
       }
     } catch (error) {
+      console.error('Save error:', error);
       toast({
         title: "Error",
         description: "Failed to save notification. Please try again.",
@@ -62,10 +89,10 @@ const NotificationManager = () => {
   };
 
   const handleAdd = async () => {
-    if (!formData.title.trim() || !formData.content.trim()) {
+    if (!formData.message.trim()) {
       toast({
         title: "Missing Information",
-        description: "Please fill in both title and content fields.",
+        description: "Please fill in the notification message.",
         variant: "destructive"
       });
       return;
@@ -74,37 +101,41 @@ const NotificationManager = () => {
     const newNotification = {
       id: Date.now(),
       ...formData,
-      date: new Date().toISOString().split('T')[0]
+      created_at: new Date().toISOString()
     };
     
     const updated = [...notifications, newNotification];
     await saveNotifications(updated);
     
-    setFormData({ title: '', content: '', priority: 'medium', isActive: true });
+    setFormData({ message: '', type: 'info', isActive: true });
     setShowAddForm(false);
   };
 
   const handleEdit = (notification: any) => {
     setEditingId(notification.id);
-    setFormData(notification);
+    setFormData({
+      message: notification.message,
+      type: notification.type,
+      isActive: notification.isActive
+    });
   };
 
   const handleUpdate = async () => {
-    if (!formData.title.trim() || !formData.content.trim()) {
+    if (!formData.message.trim()) {
       toast({
         title: "Missing Information",
-        description: "Please fill in both title and content fields.",
+        description: "Please fill in the notification message.",
         variant: "destructive"
       });
       return;
     }
 
     const updated = notifications.map((notif: any) =>
-      notif.id === editingId ? { ...formData, id: editingId } : notif
+      notif.id === editingId ? { ...notif, ...formData } : notif
     );
     await saveNotifications(updated);
     setEditingId(null);
-    setFormData({ title: '', content: '', priority: 'medium', isActive: true });
+    setFormData({ message: '', type: 'info', isActive: true });
   };
 
   const handleDelete = async (id: number) => {
@@ -115,7 +146,7 @@ const NotificationManager = () => {
   };
 
   const resetForm = () => {
-    setFormData({ title: '', content: '', priority: 'medium', isActive: true });
+    setFormData({ message: '', type: 'info', isActive: true });
     setEditingId(null);
     setShowAddForm(false);
   };
@@ -151,70 +182,59 @@ const NotificationManager = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Notification Title</label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                placeholder="e.g., School Holiday Announcement"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Priority Level</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Notification Type</label>
               <select
-                value={formData.priority}
-                onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
-                {priorityOptions.map(option => (
+                {typeOptions.map(option => (
                   <option key={option.value} value={option.value}>
                     {option.label} - {option.description}
                   </option>
                 ))}
               </select>
             </div>
+            <div className="flex items-center">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={formData.isActive}
+                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                  className="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                />
+                <span className="text-sm text-gray-700">Show this notification on the website</span>
+              </label>
+            </div>
           </div>
           
           <div className="mb-4">
             <label className="block text-sm font-semibold text-gray-700 mb-2">Notification Message</label>
             <textarea
-              value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="Enter the full notification message that will be displayed to website visitors..."
+              placeholder="Enter the notification message that will be displayed to website visitors..."
             />
           </div>
           
-          <div className="flex items-center justify-between">
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={formData.isActive}
-                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                className="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-              />
-              <span className="text-sm text-gray-700">Show this notification on the website</span>
-            </label>
-            
-            <div className="flex space-x-2">
-              <button
-                onClick={resetForm}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2"
-              >
-                <X className="w-4 h-4" />
-                <span>Cancel</span>
-              </button>
-              <button
-                onClick={editingId ? handleUpdate : handleAdd}
-                disabled={isSaving}
-                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-2 disabled:opacity-50"
-              >
-                <Save className="w-4 h-4" />
-                <span>{editingId ? 'Update' : 'Create'} Notification</span>
-              </button>
-            </div>
+          <div className="flex space-x-2 justify-end">
+            <button
+              onClick={resetForm}
+              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2"
+            >
+              <X className="w-4 h-4" />
+              <span>Cancel</span>
+            </button>
+            <button
+              onClick={editingId ? handleUpdate : handleAdd}
+              disabled={isSaving}
+              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-2 disabled:opacity-50"
+            >
+              <Save className="w-4 h-4" />
+              <span>{editingId ? 'Update' : 'Create'} Notification</span>
+            </button>
           </div>
         </div>
       )}
@@ -224,7 +244,7 @@ const NotificationManager = () => {
         <h3 className="font-semibold text-blue-800 mb-2">📢 How notifications work:</h3>
         <ul className="text-sm text-blue-700 space-y-1">
           <li>• Active notifications appear in the banner at the top of your website</li>
-          <li>• High priority notifications are shown first and have a red color</li>
+          <li>• Different types have different colors and styling</li>
           <li>• Only active notifications are visible to website visitors</li>
           <li>• You can edit or delete notifications at any time</li>
         </ul>
@@ -247,11 +267,10 @@ const NotificationManager = () => {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-2">
-                    <h5 className="font-semibold text-gray-800">{notification.title}</h5>
                     <span className={`px-2 py-1 text-xs rounded-full ${
-                      priorityOptions.find(p => p.value === notification.priority)?.color || 'bg-gray-100 text-gray-600'
+                      typeOptions.find(p => p.value === notification.type)?.color || 'bg-gray-100 text-gray-600'
                     }`}>
-                      {priorityOptions.find(p => p.value === notification.priority)?.label || notification.priority}
+                      {typeOptions.find(p => p.value === notification.type)?.label || notification.type}
                     </span>
                     <span className={`px-2 py-1 text-xs rounded-full ${
                       notification.isActive 
@@ -261,8 +280,10 @@ const NotificationManager = () => {
                       {notification.isActive ? '✓ Active' : '✗ Inactive'}
                     </span>
                   </div>
-                  <p className="text-gray-600 text-sm mb-2">{notification.content}</p>
-                  <p className="text-gray-400 text-xs">Created: {notification.date}</p>
+                  <p className="text-gray-800 text-sm mb-2">{notification.message}</p>
+                  <p className="text-gray-400 text-xs">
+                    Created: {new Date(notification.created_at).toLocaleDateString()}
+                  </p>
                 </div>
                 <div className="flex space-x-2">
                   <button

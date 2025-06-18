@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Save, X, Upload, Image as ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { updateJsonFile, loadJsonFile } from '../../utils/dataWriter';
 
 const GalleryManager = () => {
   const [images, setImages] = useState([]);
@@ -30,20 +29,47 @@ const GalleryManager = () => {
 
   const loadImages = async () => {
     try {
-      const data = await loadJsonFile('gallery.json');
+      console.log('Loading gallery images from API');
+      const response = await fetch('/api/gallery');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Loaded gallery data:', data);
+      
       if (data && data.images) {
         setImages(data.images);
       }
     } catch (error) {
       console.error('Error loading images:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load gallery images from database",
+        variant: "destructive"
+      });
     }
   };
 
   const saveImages = async (updatedImages: any[]) => {
     setIsSaving(true);
     try {
-      const success = await updateJsonFile('gallery.json', { images: updatedImages });
-      if (success) {
+      console.log('Saving gallery images to API:', updatedImages);
+      
+      const response = await fetch('/api/gallery', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ images: updatedImages })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result.success) {
         setImages(updatedImages);
         toast({
           title: "Success!",
@@ -53,6 +79,7 @@ const GalleryManager = () => {
         throw new Error('Failed to save');
       }
     } catch (error) {
+      console.error('Save error:', error);
       toast({
         title: "Error",
         description: "Failed to save gallery changes. Please try again.",
@@ -86,7 +113,12 @@ const GalleryManager = () => {
 
   const handleEdit = (image: any) => {
     setEditingId(image.id);
-    setFormData(image);
+    setFormData({
+      title: image.title,
+      description: image.description,
+      url: image.url,
+      category: image.category
+    });
   };
 
   const handleUpdate = async () => {
