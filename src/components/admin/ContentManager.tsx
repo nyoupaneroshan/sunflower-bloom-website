@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Save, X, RefreshCw, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -217,7 +218,8 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
                 alt="Preview" 
                 className="w-20 h-20 object-cover rounded-lg border"
                 onError={(e) => {
-                  e.target.style.display = 'none';
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
                 }}
               />
             </div>

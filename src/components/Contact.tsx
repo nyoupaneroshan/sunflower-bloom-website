@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { loadJsonFile } from '../utils/dataWriter';
@@ -164,11 +165,11 @@ const Contact = () => {
           <div className="aspect-w-16 aspect-h-9 w-full rounded-xl overflow-hidden shadow-lg">
             {contactData.mapUrl && (
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4032.0402149898878!2d85.2998052!3d27.750960300000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb18cce4ffffe7%3A0x161276d0d897c665!2sSunflower%20Academy%20(English%20Medium%20SS)!5e1!3m2!1sen!2snp!4v1750232702113!5m2!1sen!2snp"
+                src={contactData.mapUrl}
                 width="100%"
                 height="450"
                 style={{ border: 0 }}
-                allowFullScreen=""
+                allowFullScreen={true}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 className="rounded-xl"
@@ -182,8 +183,3 @@ const Contact = () => {
 };
 
 export default Contact;
-
-
-
-
-
