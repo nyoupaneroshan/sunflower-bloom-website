@@ -11,7 +11,7 @@ const About = () => {
     subtitle: "Cultivating Excellence in Education Since 1995",
     description: "At Sunflower Academy, we believe every child is unique and deserves personalized attention to reach their full potential. Our nurturing environment combines academic excellence with character development.",
     principalMessage: "Welcome to Sunflower Academy! As the principal, I'm proud to lead an institution that has been shaping young minds for over two decades. Our commitment to excellence in education and character development remains unwavering.",
-    principalName: "Dr. Sarah Johnson",
+    principalName: "Keshab Raj Sharma",
     principalImage: "/principal.jpeg",
     schoolHistory: "Founded in 1995, Sunflower Academy has grown from a small neighborhood school to one of the region's most respected educational institutions, serving over 800 students.",
     mission: "To provide quality education that nurtures intellectual curiosity, creativity, and character development in a safe and supportive environment.",
