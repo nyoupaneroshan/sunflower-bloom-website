@@ -1,84 +1,146 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
-import { loadJsonFile } from '../utils/dataWriter';
+import heroData from '../data/hero.json';
+
+// Define the default image to be used as a fallback
+const defaultImage = {
+  url: "https://raw.githubusercontent.com/nyoupaneroshan/SunflowerAcademy/refs/heads/main/public/school-line.jpg"
+};
 
 const Hero = () => {
-  const [heroData, setHeroData] = useState({
-    title: "Welcome to Sunflower Academy",
-    subtitle: "Nurturing Young Minds for Tomorrow's Success",
-    description: "A place where children grow, learn, and flourish in a safe and inspiring environment. Our dedicated teachers and innovative programs ensure every child reaches their full potential.",
-    buttonText: "Explore Our Programs",
-    backgroundImage: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2832&q=80"
-  });
+  const [currentText, setCurrentText] = useState('');
+  const [textIndex, setTextIndex] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  const texts = ['Excellence', 'Innovation', 'Future Leaders', 'Success'];
+
+  // Check if heroData has images, otherwise use the default.
+  const images = (heroData.images && heroData.images.length > 0) ? heroData.images : [defaultImage];
+
+  // Typing effect for text
   useEffect(() => {
-    loadHeroData();
+    const text = texts[textIndex];
+    let currentIndex = 0;
     
-    // Listen for data updates from admin panel
-    const handleDataUpdate = (event) => {
-      if (event.detail.filename === 'hero.json') {
-        setHeroData(event.detail.data);
+    const typeText = () => {
+      if (currentIndex <= text.length) {
+        setCurrentText(text.slice(0, currentIndex));
+        currentIndex++;
+        setTimeout(typeText, 100);
+      } else {
+        setTimeout(() => {
+          setTextIndex((prev) => (prev + 1) % texts.length);
+        }, 2000);
       }
     };
+    
+    typeText();
+  }, [textIndex]);
 
-    window.addEventListener('dataUpdated', handleDataUpdate);
-    return () => window.removeEventListener('dataUpdated', handleDataUpdate);
-  }, []);
+  // Image slider effect
+  useEffect(() => {
+    if (images.length > 1) {
+      const timer = setTimeout(() => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+      }, 5000); 
 
-  const loadHeroData = async () => {
-    const data = await loadJsonFile('hero.json');
-    if (data) {
-      setHeroData(data);
+      return () => clearTimeout(timer);
     }
-  };
+  }, [currentImageIndex, images.length]);
 
   return (
-    <section 
-      id="home" 
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${heroData.backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 opacity-20 animate-pulse"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-white opacity-5"></div>
-        <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-br from-orange-500 to-yellow-400 rounded-full mix-blend-multiply filter blur-2xl animate-float"></div>
-        <div className="absolute top-10 left-20 w-32 h-32 bg-gradient-to-tr from-yellow-400 to-orange-500 rounded-full mix-blend-multiply filter blur-2xl animate-float animation-delay-8"></div>
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      
+      {/* Background Image Slider */}
+      <div className="absolute inset-0">
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000 ease-in-out"
+            style={{
+              backgroundImage: `url(${image.url})`,
+              opacity: index === currentImageIndex ? 1 : 0,
+            }}
+          />
+        ))}
       </div>
       
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="animate-fade-in">
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            {heroData.title}
-          </h1>
-          <p className="text-xl md:text-2xl text-yellow-200 mb-8 font-medium">
-            {heroData.subtitle}
-          </p>
-          <p className="text-lg md:text-xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed">
-            {heroData.description}
-          </p>
+      {/* --- MODIFIED: Dark overlay for text readability --- */}
+      {/* Changed from bg-black/50 to bg-black/70 for a darker background */}
+      <div className="absolute inset-0 bg-black/70"></div>
+      
+      {/* Animated background elements */}
+      <div className="absolute inset-0">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute animate-float"
+            style={{
+              left: `${20 + i * 15}%`,
+              top: `${10 + i * 10}%`,
+              animationDelay: `${i * 0.5}s`,
+              animationDuration: `${3 + i * 0.5}s`
+            }}
+          >
+            <div className="w-8 h-8 bg-white/20 rounded-full blur-sm"></div>
+          </div>
+        ))}
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="space-y-8 animate-fade-in">
+          <div className="space-y-4">
+            <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
+              {heroData.title}
+            </h1>
+            <div className="text-xl md:text-2xl text-yellow-100 font-medium">
+              Inspiring{' '}
+              <span className="text-yellow-300 font-bold min-w-[200px] inline-block text-left">
+                {currentText}
+                <span className="animate-pulse">|</span>
+              </span>
+            </div>
+            <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+              {heroData.description}
+            </p>
+          </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="group bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 px-8 py-4 rounded-full font-bold text-lg hover:from-yellow-300 hover:to-orange-400 transform hover:scale-105 transition-all duration-300 shadow-2xl flex items-center space-x-2">
-              <span>{heroData.buttonText}</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-            </button>
-            
-            <button className="group border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-gray-900 transition-all duration-300 shadow-2xl">
-              Take Virtual Tour
-            </button>
+            <a
+              href={heroData.ctaButton.link}
+              className="bg-white text-orange-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-yellow-50 hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl"
+            >
+              {heroData.ctaButton.text}
+            </a>
+            <a
+              href="#contact"
+              className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-orange-600 transform hover:scale-105 transition-all duration-300"
+            >
+              Contact Us
+            </a>
+          </div>
+
+          <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-white">1000+</div>
+              <div className="text-yellow-100">Students</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-white">20+</div>
+              <div className="text-yellow-100">Years</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-white">17</div>
+              <div className="text-yellow-100">Batches</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-10 left-0 right-0 text-center z-10 animate-bounce">
-        <a href="#about" className="text-white text-sm font-bold hover:text-yellow-200 transition-colors duration-300">
-          Scroll Down
-        </a>
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
+          <div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
+        </div>
       </div>
     </section>
   );
