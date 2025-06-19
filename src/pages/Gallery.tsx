@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, X, Loader2 } from 'lucide-react'; // Added Loader2 icon
+import React, { useState, useEffect, useMemo } from 'react';
+import { ChevronLeft, ChevronRight, X, Loader2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+
+// The raw URL to your gallery.json file on GitHub.
+const GALLERY_DATA_URL = 'https://raw.githubusercontent.com/nyoupaneroshan/sunflower-bloom-website/main/src/data/gallery.json';
 
 const Gallery = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -10,11 +13,12 @@ const Gallery = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch data from the API endpoint
+  // Fetch data directly from the GitHub raw URL
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const response = await fetch('/api/gallery');
+        // --- MODIFIED: Fetching directly from GitHub ---
+        const response = await fetch(GALLERY_DATA_URL);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -31,10 +35,19 @@ const Gallery = () => {
     fetchImages();
   }, []);
 
-  const categories = ['all', ...Array.from(new Set(images.map((img) => img.category)))];
-  const filteredImages = selectedCategory === 'all' 
-    ? images 
-    : images.filter((img) => img.category === selectedCategory);
+  // This calculation now only runs when the `images` state changes.
+  const categories = useMemo(() => {
+    if (images.length === 0) return ['all'];
+    return ['all', ...Array.from(new Set(images.map((img) => img.category)))];
+  }, [images]);
+
+  // This calculation now only runs when `selectedCategory` or `images` change.
+  const filteredImages = useMemo(() => {
+    if (selectedCategory === 'all') {
+      return images;
+    }
+    return images.filter((img) => img.category === selectedCategory);
+  }, [images, selectedCategory]);
 
   const openLightbox = (image) => {
     setSelectedImage(image);
@@ -45,9 +58,11 @@ const Gallery = () => {
   };
 
   const navigateImage = (direction) => {
+    if (!selectedImage) return;
     const currentIndex = filteredImages.findIndex((img) => img.id === selectedImage.id);
-    let newIndex;
+    if (currentIndex === -1) return;
     
+    let newIndex;
     if (direction === 'prev') {
       newIndex = currentIndex === 0 ? filteredImages.length - 1 : currentIndex - 1;
     } else {
@@ -134,11 +149,11 @@ const Gallery = () => {
               <X className="w-8 h-8" />
             </button>
             
-            <button onClick={() => navigateImage('prev')} className="absolute left-0 sm:-left-12 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 p-3 rounded-full">
+            <button onClick={() => navigateImage('prev')} className="absolute left-0 sm:-left-12 top-1/2 transform -translate-y-12 text-white hover:bg-white/20 p-3 rounded-full">
               <ChevronLeft className="w-8 h-8" />
             </button>
             
-            <button onClick={() => navigateImage('next')} className="absolute right-0 sm:-right-12 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 p-3 rounded-full">
+            <button onClick={() => navigateImage('next')} className="absolute right-0 sm:-right-12 top-1/2 transform -translate-y-12 text-white hover:bg-white/20 p-3 rounded-full">
               <ChevronRight className="w-8 h-8" />
             </button>
             
