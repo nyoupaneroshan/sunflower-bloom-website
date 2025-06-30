@@ -1,9 +1,9 @@
-// Data loader utility for fetching data from SQLite database via API
+// Data loader utility for fetching data from MySQL database via API
 export const loadDataFromDatabase = async (endpoint: string) => {
   try {
     console.log(`Loading data from ${endpoint}`);
     
-    const response = await fetch(`/api/database/${endpoint}`);
+    const response = await fetch(`/api/${endpoint}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -38,7 +38,7 @@ export const updateDataInDatabase = async (endpoint: string, data: any) => {
     }
     
     // Send PUT request to update data
-    const response = await fetch(`/api/database/${endpoint}`, {
+    const response = await fetch(`/api/${endpoint}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

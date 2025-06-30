@@ -19,4 +19,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  define: {
+    'process.env.DB_HOST': JSON.stringify(process.env.DB_HOST || 'localhost'),
+    'process.env.DB_USER': JSON.stringify(process.env.DB_USER || 'root'),
+    'process.env.DB_PASSWORD': JSON.stringify(process.env.DB_PASSWORD || ''),
+    'process.env.DB_DATABASE': JSON.stringify(process.env.DB_DATABASE || 'sunflower'),
+  },
 }));

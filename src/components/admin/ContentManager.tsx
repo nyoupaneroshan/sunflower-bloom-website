@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Save, X, RefreshCw, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -43,7 +42,8 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
     principalImage: 'Principal Image',
     schoolHistory: 'School History',
     mission: 'Mission Statement',
-    vision: 'Vision Statement'
+    vision: 'Vision Statement',
+    heroImage: 'Hero Background Image'
   };
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
   const loadContent = async () => {
     setIsLoading(true);
     try {
-      console.log(`Loading content for ${contentType} from API`);
+      console.log(`Loading content for ${contentType} from MySQL API`);
       
       const response = await fetch(`/api/${contentType}`);
       if (!response.ok) {
@@ -61,15 +61,15 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
       }
       
       const data = await response.json();
-      console.log(`Loaded data from API:`, data);
+      console.log(`Loaded data from MySQL API:`, data);
       
       setContent(data);
       setOriginalContent(data);
     } catch (error) {
       console.error(`Error loading ${contentType} content:`, error);
       toast({
-        title: "Error",
-        description: `Failed to load ${contentLabels[contentType] || contentType} content`,
+        title: "MySQL Connection Error",
+        description: `Failed to load ${contentLabels[contentType] || contentType} content from database`,
         variant: "destructive"
       });
     }
@@ -79,7 +79,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      console.log(`Saving content to API:`, content);
+      console.log(`Saving content to MySQL API:`, content);
       
       const response = await fetch(`/api/${contentType}`, {
         method: 'PUT',
@@ -90,7 +90,8 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
@@ -98,16 +99,16 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
         setOriginalContent(content);
         toast({
           title: "✅ Success!",
-          description: `${contentLabels[contentType] || contentType} has been updated successfully. Changes are now live on your website!`,
+          description: `${contentLabels[contentType] || contentType} has been updated successfully in MySQL database. Changes are now live on your website!`,
         });
       } else {
-        throw new Error('Failed to save');
+        throw new Error(result.error || 'Failed to save to MySQL');
       }
     } catch (error) {
-      console.error('Save error:', error);
+      console.error('MySQL save error:', error);
       toast({
-        title: "❌ Error",
-        description: `Failed to save changes. Please try again.`,
+        title: "❌ MySQL Error",
+        description: `Failed to save changes to database: ${error.message}`,
         variant: "destructive"
       });
     }
@@ -118,7 +119,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
     setContent(originalContent);
     toast({
       title: "🔄 Reset Complete",
-      description: "All changes have been reverted to the last saved version.",
+      description: "All changes have been reverted to the last saved version from MySQL database.",
     });
   };
 
@@ -243,7 +244,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <RefreshCw className="w-8 h-8 animate-spin text-orange-500 mx-auto mb-2" />
-          <p className="text-gray-600">Loading content...</p>
+          <p className="text-gray-600">Loading content from MySQL database...</p>
         </div>
       </div>
     );
@@ -258,7 +259,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
             Edit {contentLabels[contentType] || contentType}
           </h1>
           <p className="text-gray-600 mt-1">
-            Make changes to your website content. All changes are saved to the database and will appear on your website immediately.
+            Make changes to your website content. All changes are saved to the MySQL database and will appear on your website immediately.
           </p>
         </div>
         <div className="flex space-x-2">
@@ -275,7 +276,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
             className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-2 disabled:opacity-50"
           >
             {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
+            <span>{isSaving ? 'Saving to MySQL...' : 'Save to MySQL'}</span>
           </button>
         </div>
       </div>
@@ -284,9 +285,9 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
         <div className="space-y-6">
           {Object.keys(content).length > 0 ? renderField(content) : (
             <div className="text-center py-8">
-              <p className="text-gray-500 mb-4">No content available to edit.</p>
+              <p className="text-gray-500 mb-4">No content available to edit from MySQL database.</p>
               <button onClick={loadContent} className="text-orange-500 hover:text-orange-600">
-                Try reloading content
+                Try reloading content from MySQL
               </button>
             </div>
           )}
@@ -296,11 +297,11 @@ const ContentManager: React.FC<ContentManagerProps> = ({ contentType }) => {
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h3 className="font-semibold text-blue-800 mb-2">💡 Tips for editing content:</h3>
         <ul className="text-sm text-blue-700 space-y-1">
-          <li>• Click "Save Changes" to make your updates live on the website</li>
+          <li>• Click "Save to MySQL" to make your updates live on the website</li>
           <li>• For images, paste the complete web address (URL starting with https://)</li>
           <li>• Use "Reset Changes" to undo all unsaved modifications</li>
           <li>• Long text fields support multiple paragraphs and detailed descriptions</li>
-          <li>• 🔒 All changes are saved securely to the database</li>
+          <li>• 🔒 All changes are saved securely to the MySQL database</li>
         </ul>
       </div>
     </div>

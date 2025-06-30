@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Database, CheckCircle, XCircle, AlertCircle, RefreshCw } from 'lucide-react';
 
@@ -10,14 +9,17 @@ const DatabaseStatus = () => {
   const checkDatabaseConnection = async () => {
     setStatus('checking');
     try {
-      console.log('Checking database connection...');
+      console.log('Checking MySQL database connection...');
       
       // Test multiple endpoints to see which ones work
       const endpoints = [
         { name: 'Notifications', path: '/api/notifications' },
         { name: 'Gallery', path: '/api/gallery' },
         { name: 'Hero', path: '/api/hero' },
-        { name: 'Contact', path: '/api/contact' }
+        { name: 'Contact', path: '/api/contact' },
+        { name: 'About', path: '/api/about' },
+        { name: 'Facilities', path: '/api/facilities' },
+        { name: 'Activities', path: '/api/activities' }
       ];
       
       const results = await Promise.allSettled(
@@ -39,7 +41,7 @@ const DatabaseStatus = () => {
       
       if (successful === endpoints.length) {
         setStatus('connected');
-        setDetails(`All ${endpoints.length} API endpoints working correctly`);
+        setDetails(`All ${endpoints.length} MySQL API endpoints working correctly`);
       } else if (successful > 0) {
         setStatus('partial');
         setDetails(`${successful}/${endpoints.length} endpoints working. Issues with: ${
@@ -49,16 +51,16 @@ const DatabaseStatus = () => {
         setStatus('error');
         const firstError = failed[0];
         if (firstError.status === 'fulfilled') {
-          setDetails(`Database connection failed: ${firstError.value.data?.error || 'Unknown error'}`);
+          setDetails(`MySQL database connection failed: ${firstError.value.data?.error || 'Unknown error'}`);
         } else {
-          setDetails(`Network error: ${firstError.reason?.message || 'Cannot reach API'}`);
+          setDetails(`Network error: ${firstError.reason?.message || 'Cannot reach MySQL API'}`);
         }
       }
       
       setLastChecked(new Date());
       
     } catch (error) {
-      console.error('Database connection check failed:', error);
+      console.error('MySQL database connection check failed:', error);
       setStatus('error');
       setDetails(`Connection check failed: ${error.message}`);
       setLastChecked(new Date());
@@ -98,13 +100,13 @@ const DatabaseStatus = () => {
   const getStatusText = () => {
     switch (status) {
       case 'checking':
-        return 'Checking Connection...';
+        return 'Checking MySQL Connection...';
       case 'connected':
-        return 'Database Connected';
+        return 'MySQL Database Connected';
       case 'partial':
-        return 'Partial Connection';
+        return 'Partial MySQL Connection';
       case 'error':
-        return 'Connection Failed';
+        return 'MySQL Connection Failed';
     }
   };
 
@@ -130,11 +132,17 @@ const DatabaseStatus = () => {
           onClick={checkDatabaseConnection}
           disabled={status === 'checking'}
           className="p-2 text-gray-600 hover:bg-white rounded-lg transition-colors disabled:opacity-50"
-          title="Refresh connection status"
+          title="Refresh MySQL connection status"
         >
           <RefreshCw className={`w-4 h-4 ${status === 'checking' ? 'animate-spin' : ''}`} />
         </button>
       </div>
+      
+      {status === 'connected' && (
+        <div className="mt-3 text-xs text-green-700 bg-green-100 p-2 rounded">
+          ✅ MySQL Database: {process.env.DB_DATABASE || 'sunflower'} @ {process.env.DB_HOST || 'localhost'}
+        </div>
+      )}
     </div>
   );
 };
