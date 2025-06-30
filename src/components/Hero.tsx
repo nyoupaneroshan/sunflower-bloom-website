@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import heroData from '../data/hero.json';
+import { loadDataFromDatabase } from '../utils/dataLoader';
 
 // Define the default image to be used as a fallback
 const defaultImage = {
@@ -7,14 +7,46 @@ const defaultImage = {
 };
 
 const Hero = () => {
+  const [heroData, setHeroData] = useState({
+    title: "Sunflower Academy",
+    subtitle: "Inspiring Excellence Building Future",
+    description: "Sunflower Academy offers a well-rounded education that blends academic excellence with creativity, innovation, and real-world skills.",
+    heroImage: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+    ctaButton: {
+      text: "Explore Our Campus",
+      link: "#about"
+    }
+  });
+  
   const [currentText, setCurrentText] = useState('');
   const [textIndex, setTextIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const texts = ['Excellence', 'Innovation', 'Future Leaders', 'Success'];
 
-  // Check if heroData has images, otherwise use the default.
-  const images = (heroData.images && heroData.images.length > 0) ? heroData.images : [defaultImage];
+  // Use hero image from database or fallback to default
+  const images = heroData.heroImage ? [{ url: heroData.heroImage }] : [defaultImage];
+
+  useEffect(() => {
+    loadHeroData();
+    
+    // Listen for data updates from admin panel
+    const handleDataUpdate = (event: any) => {
+      if (event.detail.endpoint === 'hero') {
+        setHeroData(event.detail.data);
+      }
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+    return () => window.removeEventListener('dataUpdated', handleDataUpdate);
+  }, []);
+
+  const loadHeroData = async () => {
+    const data = await loadDataFromDatabase('hero');
+    if (data) {
+      setHeroData(data);
+    }
+  };
 
   // Typing effect for text
   useEffect(() => {
@@ -64,8 +96,7 @@ const Hero = () => {
         ))}
       </div>
       
-      {/* --- MODIFIED: Dark overlay for text readability --- */}
-      {/* Changed from bg-black/50 to bg-black/70 for a darker background */}
+      {/* Dark overlay for text readability */}
       <div className="absolute inset-0 bg-black/70"></div>
       
       {/* Animated background elements */}

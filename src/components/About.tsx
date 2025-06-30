@@ -1,17 +1,63 @@
-import React from 'react';
-import aboutData from '../data/about.json';
+import React, { useState, useEffect } from 'react';
+import { loadDataFromDatabase } from '../utils/dataLoader';
 
 const About = () => {
+  const [aboutData, setAboutData] = useState({
+    vision: {
+      title: "Our Vision",
+      content: "To be a leading institution recognized for academic excellence, holistic development, and innovation, empowering students to thrive as compassionate leaders and changemakers in a dynamic global community."
+    },
+    mission: {
+      title: "Our Mission", 
+      content: "To be a leading institution recognized for academic excellence, holistic development, and innovation, empowering students to thrive as compassionate leaders and changemakers in a dynamic global community."
+    },
+    coreValues: {
+      title: "Our Core Values",
+      values: [
+        { name: "Excellence", description: "Striving for the highest standards in everything we do." },
+        { name: "Integrity", description: "Acting with honesty, ethics, and responsibility." },
+        { name: "Innovation", description: "Embracing new ideas and approaches to learning." },
+        { name: "Respect", description: "Respecting each others." },
+        { name: "Responsibility", description: "Becoming a responsible citizen." }
+      ]
+    },
+    history: {
+      title: "Our History",
+      content: "Sunflower Academy was established in 2061 B.S. with classes from Nursery to Grade 5, founded through the dedication and vision of Chairman Mr. Uddhab Bogati and Founder Member Mr. Ram Bahadur Gautam."
+    }
+  });
+
   // Storing the principal's message in a constant for readability
   const principalMessage = `Welcome you to Sunflower Academy — a place where young minds bloom and futures are built with care, vision, and dedication.
 
-At Sunflower Academy, we believe that every child is unique and full of potential. Our mission is to provide a nurturing and inspiring environment where students are encouraged to think critically, act responsibly, and strive for excellence in all aspects of life. True to our motto, “Inspiring Excellence, Building Future,” we are committed to guiding our students toward academic achievement, personal growth, and social responsibility.
+At Sunflower Academy, we believe that every child is unique and full of potential. Our mission is to provide a nurturing and inspiring environment where students are encouraged to think critically, act responsibly, and strive for excellence in all aspects of life. True to our motto, "Inspiring Excellence, Building Future," we are committed to guiding our students toward academic achievement, personal growth, and social responsibility.
 
 We take pride in our modern infrastructure, which includes well-equipped science and computer labs, a digital classroom, an expansive library, and international-standard sports facilities. These resources, along with a dedicated team of experienced and passionate educators, help us create a balanced learning experience — blending academic rigor with co-curricular engagement.
 
 As a proud member of the World Schools League, we continuously embrace global best practices in education while remaining rooted in our cultural values. Whether it is through book reviews, public speaking, or extracurricular programs, we aim to develop confident, compassionate, and capable individuals ready to face the world.
 
-Thank you for considering Sunflower Academy as the stepping stone in your child’s educational journey. We look forward to working hand-in-hand with parents and the community to shape a generation of learners who are not only knowledgeable but also kind, curious, and future-ready.`;
+Thank you for considering Sunflower Academy as the stepping stone in your child's educational journey. We look forward to working hand-in-hand with parents and the community to shape a generation of learners who are not only knowledgeable but also kind, curious, and future-ready.`;
+
+  useEffect(() => {
+    loadAboutData();
+    
+    // Listen for data updates from admin panel
+    const handleDataUpdate = (event: any) => {
+      if (event.detail.endpoint === 'about') {
+        setAboutData(event.detail.data);
+      }
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+    return () => window.removeEventListener('dataUpdated', handleDataUpdate);
+  }, []);
+
+  const loadAboutData = async () => {
+    const data = await loadDataFromDatabase('about');
+    if (data) {
+      setAboutData(data);
+    }
+  };
 
   return (
     <section id="about" className="py-20 bg-white">
@@ -43,7 +89,6 @@ Thank you for considering Sunflower Academy as the stepping stone in your child�
           <div className="relative">
             <div className="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-3xl p-8 h-full flex items-center justify-center">
               <div className="text-center space-y-6">
-                {/* MODIFIED: Replaced emoji with logo */}
                 <div className="w-32 h-32 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto shadow-lg p-4">
                   <img src="/main-logo.png" alt="Sunflower Academy Logo" className="w-full h-full object-contain" />
                 </div>
@@ -150,10 +195,9 @@ Thank you for considering Sunflower Academy as the stepping stone in your child�
                 <div className="relative">
                   <img
                     className="h-80 w-80 rounded-3xl object-cover shadow-lg"
-                    src="/principal.jpeg" // IMPORTANT: Replace with the actual path to the photo in your /public folder
+                    src="/principal.jpeg"
                     alt="Keshab Raj Sharma, Principal of Sunflower Academy"
                   />
-                  {/* MODIFIED: Replaced emoji with logo */}
                   <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg p-3">
                     <img src="/main-logo.png" alt="Sunflower Academy Logo" className="w-full h-full object-contain" />
                   </div>
